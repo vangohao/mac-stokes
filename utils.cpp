@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <iostream>
 #include "project.h"
+using namespace std;
 dtype **new_2darray(int n, int m)
 {
     dtype ** array = (dtype **)malloc(sizeof(dtype*) * n);
@@ -13,4 +15,16 @@ dtype **new_2darray(int n, int m)
 dtype *new_vector(int n)
 {
     return (dtype*)calloc(n, sizeof(dtype));
+}
+void print(dtype ** a, int n, int m)
+{
+    cout<<"start printing"<<endl;
+    for(int i = 0; i < n; i++)
+    {
+        for(int j = 0; j < m; j++)
+        {
+            cout<<a[i][j]<<" ";
+        }
+        cout<<endl;
+    }
 }

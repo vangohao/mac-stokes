@@ -9,8 +9,8 @@ int restriction(int n, int level, dtype ** ur, dtype ** vr, dtype ** pr, dtype *
         // FIXME
         ur[0][j] = (2 * u[0][2 * j] + u[1][2 * j] 
                 + 2 * u[0][2 * j + 1] + u[1][2 * j + 1]) / 8.;
-        ur[n][j] = (2 * u[n][2 * j] + u[n - 1][2 * j] 
-                + 2 * u[n][2 * j + 1] + u[n - 1][2 * j + 1]) / 8.;
+        ur[n][j] = (2 * u[2 * n][2 * j] + u[2 * n - 1][2 * j] 
+                + 2 * u[2 * n][2 * j + 1] + u[2 * n - 1][2 * j + 1]) / 8.;
     }
     for(int i = 1; i < n; i++)
     {
@@ -27,8 +27,8 @@ int restriction(int n, int level, dtype ** ur, dtype ** vr, dtype ** pr, dtype *
         // FIXME
         vr[j][0] = (2 * v[2 * j][0] + v[2 * j][1] 
                 + 2 * v[2 * j + 1][0] + v[2 * j + 1][1]) / 8.;
-        vr[j][n] = (2 * v[2 * j][n] + v[2 * j][n - 1] 
-                + 2 * v[2 * j + 1][n] + v[2 * j + 1][n - 1]) / 8.;
+        vr[j][n] = (2 * v[2 * j][2 * n] + v[2 * j][2 * n - 1] 
+                + 2 * v[2 * j + 1][2 * n] + v[2 * j + 1][2 * n - 1]) / 8.;
     }
     for(int i = 1; i < n; i++)
     {
