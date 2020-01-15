@@ -13,7 +13,7 @@ int correction(int n, int level, dtype ** ur, dtype ** vr, dtype ** pr, dtype **
 
 dtype **new_2darray(int n, int m);
 dtype *new_vector(int n);
-void print(dtype ** a, int n, int m);
+void print(dtype ** a, int n, int m, const char * name);
 
 // #define checkf(level, i, j) ((f)[i << (level + 1)][(j << (level + 1)) + (1 << (level))])
 // #define checkg(level, i, j) ((g)[(i << (level+1)) + (1 << (level))][j << level])

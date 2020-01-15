@@ -9,17 +9,16 @@ int error(int n, dtype ** u, dtype ** v, dtype ** u_exact, dtype ** v_exact, dty
 {
     dtype h = 1. / n;
     dtype en_sq = 0;
-    cout<<"u_exact:"<<endl;
     for(int i = 1; i < n; i++)
     {
         for(int j = 0; j < n; j++)
         {
             en_sq += sqr(u[i][j] - u_exact[2 * i][2 * j + 1]);
-            cout << u_exact[2 * i][2 * j + 1] << " ";
             en_sq += sqr(v[j][i] - v_exact[2 * j + 1][2 * i]);
         }
-        cout<<endl;
     }
+    print(u_exact, n - 1, n, "u_exact");
+    print(v_exact, n, n - 1, "v_exact");
     *en = sqr(en_sq * h);
     return 0;
 }

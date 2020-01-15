@@ -9,38 +9,38 @@ int dgs_iteration(int n, int level, dtype ** u, dtype ** v, dtype ** p, dtype **
     // j = 0;
     for(int i = 1; i< n;i++)
     {
-        u[i][0] = (checkf(level, i,0) * h * h - (p[i][0] - p[i - 1][0]) * h + b[i] * h + u[i][1] + u[i + 1][0] + u[i - 1][0]) / 3.;
+        u[i][0] = (f[i][0] * h * h - (p[i][0] - p[i - 1][0]) * h /* + b[i] * h */ + u[i][1] + u[i + 1][0] + u[i - 1][0]) / 3.;
     }
     for(int j = 1; j < n - 1; j++)
     {
         for(int i = 1; i < n; i++)
         {
-            u[i][j] = (checkf(level, i,j) * h * h - (p[i][j] - p[i -1][j]) * h + u[i+1][j] + u[i-1][j] + u[i][j+1] + u[i][j-1]) / 4.;
+            u[i][j] = (f[i][j] * h * h - (p[i][j] - p[i -1][j]) * h + u[i+1][j] + u[i-1][j] + u[i][j+1] + u[i][j-1]) / 4.;
         }
     }
     // j = n - 1;
     for(int i = 1; i< n;i++)
     {
-        u[i][n-1] = (checkf(level, i,n-1) * h * h - (p[i][n-1] - p[i - 1][n-1]) * h + t[i] * h + u[i][n-2] + u[i + 1][n-1] + u[i - 1][n-1]) / 3.;
+        u[i][n-1] = (f[i][n-1] * h * h - (p[i][n-1] - p[i - 1][n-1]) * h/*  + t[i] * h */ + u[i][n-2] + u[i + 1][n-1] + u[i - 1][n-1]) / 3.;
     }
 
     //update v (j,i)
     // j = 0;
     for(int i = 1; i< n;i++)
     {
-        v[0][i] = (checkg(level, 0, i) * h * h - (p[0][i] - p[0][i - 1]) * h + l[i] * h + v[1][i] + v[0][i + 1] + v[0][i - 1]) / 3.;
+        v[0][i] = (g[0][i] * h * h - (p[0][i] - p[0][i - 1]) * h /* + l[i] * h */ + v[1][i] + v[0][i + 1] + v[0][i - 1]) / 3.;
     }
     for(int j = 1; j < n - 1; j++)
     {
         for(int i = 1; i < n; i++)
         {
-            v[j][i] = (checkg(level, j, i) * h * h - (p[j][i] - p[j][i -1]) * h + v[j][i+1] + v[j][i-1] + v[j+1][i] + v[j-1][i]) / 4.;
+            v[j][i] = (g[j][i] * h * h - (p[j][i] - p[j][i -1]) * h + v[j][i+1] + v[j][i-1] + v[j+1][i] + v[j-1][i]) / 4.;
         }
     }
     // j = n - 1;
     for(int i = 1; i< n;i++)
     {
-        v[n-1][i] = (checkg(level, n-1, i) * h * h - (p[n-1][i] - p[n-1][i - 1]) * h + r[i] * h + v[n-2][i] + v[n-1][i + 1] + v[n-1][i - 1]) / 3.;
+        v[n-1][i] = (g[n-1][i] * h * h - (p[n-1][i] - p[n-1][i - 1]) * h /* + r[i] * h  */+ v[n-2][i] + v[n-1][i + 1] + v[n-1][i - 1]) / 3.;
     }
 
     dtype res;
@@ -66,24 +66,6 @@ int dgs_iteration(int n, int level, dtype ** u, dtype ** v, dtype ** p, dtype **
         }
     }
 
-    //update internal velocity
-    // for(int i = 1; i < n - 1;i++)
-    // {
-    //     for(int j = 1; j < n - 1; j++)
-    //     {
-            
-    //     }
-    // }
-
-    //update internal pressure
-    // for(int i = 1; i < n - 1;i++)
-    // {
-    //     for(int j = 1; j < n - 1; j++)
-    //     {
-            
-    //     }
-    // }
-
     //calculate edge residual (i, n - 1)
     for(int i = 1; i < n - 1; i++)
     {
@@ -99,16 +81,6 @@ int dgs_iteration(int n, int level, dtype ** u, dtype ** v, dtype ** p, dtype **
         p[i][n-2] -= tmp;
     }
 
-    //update edge velocity (i, n - 1)
-    // for(int i = 1; i < n - 1;i++)
-    // {
-    // }
-
-    //update internal pressure
-    // for(int i = 1; i < n - 1;i++)
-    // {
-    // }
-
     //calculate edge residual (i, 0)
     for(int i = 1; i < n - 1; i++)
     {
@@ -122,17 +94,6 @@ int dgs_iteration(int n, int level, dtype ** u, dtype ** v, dtype ** p, dtype **
         p[i+1][0] -= tmp;
         p[i-1][0] -= tmp;
         p[i][1] -= tmp;
-    }
-
-    //update edge velocity (i, 0)
-    for(int i = 1; i < n - 1;i++)
-    {
-        // v[i][0] -= delta;
-    }
-
-    //update edge pressure
-    for(int i = 1; i < n - 1;i++)
-    {
     }
 
     //calculate edge residual
@@ -150,16 +111,6 @@ int dgs_iteration(int n, int level, dtype ** u, dtype ** v, dtype ** p, dtype **
         p[n-1][j-1] -= tmp;
     }
 
-    //update edge velocity
-    for(int j = 1; j < n - 1; j++)
-    {
-    }
-
-    //update edge pressure
-    for(int j = 1; j < n - 1; j++)
-    {
-    }
-
     //calculate edge residual
     for(int j = 1; j < n - 1; j++)
     {
@@ -173,16 +124,6 @@ int dgs_iteration(int n, int level, dtype ** u, dtype ** v, dtype ** p, dtype **
         p[1][j] -= tmp;
         p[0][j+1] -= tmp;
         p[0][j-1] -= tmp;
-    }
-
-    //update edge velocity
-    for(int j = 1; j < n - 1; j++)
-    {
-    }
-
-    //update edge pressure
-    for(int j = 1; j < n - 1; j++)
-    {
     }
 
     // vertux 

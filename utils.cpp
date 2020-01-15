@@ -16,15 +16,15 @@ dtype *new_vector(int n)
 {
     return (dtype*)calloc(n, sizeof(dtype));
 }
-void print(dtype ** a, int n, int m)
+void print(dtype ** a, int n, int m, const char * name)
 {
-    cout<<"start printing"<<endl;
-    for(int i = 0; i < n; i++)
-    {
-        for(int j = 0; j < m; j++)
-        {
-            cout<<a[i][j]<<" ";
-        }
-        cout<<endl;
-    }
+    // cout<<"start printing"<<endl;
+    // for(int i = 0; i < n; i++)
+    // {
+    //     for(int j = 0; j < m; j++)
+    //     {
+    //         cout<<a[i][j]<<" ";
+    //     }
+    //     cout<<endl;
+    // }
 }

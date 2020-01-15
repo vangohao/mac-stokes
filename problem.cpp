@@ -19,11 +19,12 @@ int initproblem(int n, dtype ** u, dtype ** v, dtype ** p, dtype ** f, dtype **g
             v_exact[i][j] = -(1 - cos(2 * M_PIl * y)) * sin(2 * M_PIl * x);
         }
     }
-    for(int i = 0; i < n + 1; i ++)
+    for(int i = 0; i < 2 * n + 1; i ++)
     {
-        b[i] = 0;
-        t[i] = 0;
-        l[i] = 0;
-        r[i] = 0;
+        dtype x = i * h / 2;
+        b[i] = -2 * M_PIl * (1 - cos(2 * M_PIl * x));
+        t[i] = 2 * M_PIl * (1 - cos(2 * M_PIl * x));
+        l[i] = 2 * M_PIl * (1 - cos(2 * M_PIl * x));
+        r[i] = -2 * M_PIl * (1 - cos(2 * M_PIl * x));
     }
 }
