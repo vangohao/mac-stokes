@@ -28,14 +28,6 @@ int vcycle(int n, int level, int iter, int maxcnt, smoother_type smoother, dtype
     v_cycle[0] = v;
     p_cycle[0] = p;
     
-    // u_cycle_pro[0] = new_2darray(n + 1, n);
-    // v_cycle_pro[0] = new_2darray(n, n + 1);
-    // p_cycle_pro[0] = new_2darray(n, n);
-    // f_cycle[0] = new_2darray(n+1, n);
-    // g_cycle[0] = new_2darray(n, n+1);
-    // rf_cycle[0] = new_2darray(n+1, n);
-    // rg_cycle[0] = new_2darray(n, n+1);
-    // rdiv_cycle[0] = new_2darray(n, n);
     for(int lvl = 0; lvl< level; lvl++)
     {
         if (lvl>0)
@@ -98,10 +90,6 @@ int vcycle(int n, int level, int iter, int maxcnt, smoother_type smoother, dtype
                 clear(p_cycle[lvl], n >> (lvl), n >> (lvl));
             }
         }
-        // vcycle(n, level, (argc > 4 ?atoi(argv[4]) : 1), &dgs_iteration, u, v, p, f, g, b, t, l, r);
-        // residual(n, 0, u, v, p, f_cycle[0], g_cycle[0], d_cycle[0], b_cycle[0], t_cycle[0], l_cycle[0], r_cycle[0], rf_cycle[0], rg_cycle[0], rdiv_cycle[0], &res, &res_div);
-        // print(rf, n + 1, n,"residual f");
-        // print(rg, n, n + 1,"residual g");
 
         residual(n  , 0 , u_cycle[0], v_cycle[0], p_cycle[0], f_cycle[0], g_cycle[0], d_cycle[0], b, t, l, r, rf_cycle[0], rg_cycle[0], rdiv_cycle[0], &res, &res_div);
         print(rf_cycle[0], (n+1), n , "rf_before_cycle");
@@ -112,7 +100,7 @@ int vcycle(int n, int level, int iter, int maxcnt, smoother_type smoother, dtype
         }
         print(u_cycle[0], n + 1, n, "u_cycle");
         print(v_cycle[0], n, n+1, "v_cycle");
-        for(int lvl = 1; lvl < level; lvl ++)//TODO
+        for(int lvl = 1; lvl < level; lvl ++)
         {
             residual(n >> (lvl - 1), lvl-1 , u_cycle[lvl - 1], v_cycle[lvl - 1], p_cycle[lvl - 1], f_cycle[lvl - 1], g_cycle[lvl - 1], d_cycle[lvl - 1], b, t, l, r, rf_cycle[lvl - 1], rg_cycle[lvl - 1], rdiv_cycle[lvl - 1], &res, &res_div);
             restriction(n >> (lvl), lvl, f_cycle[lvl], g_cycle[lvl], d_cycle[lvl], rf_cycle[lvl - 1], rg_cycle[lvl - 1], rdiv_cycle[lvl - 1]);

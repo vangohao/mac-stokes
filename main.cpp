@@ -15,22 +15,11 @@ int main(int argc, char* argv[])
     dtype** g = new_2darray(2*n+1, 2*n+1);
     dtype** u_exact = new_2darray(2*n+1, 2*n+1);
     dtype** v_exact = new_2darray(2*n+1, 2*n+1);
-    dtype** rf = new_2darray(n+1, n);
-    dtype** rg = new_2darray(n, n+1);
-    dtype** rdiv = new_2darray(n, n);
 
     dtype * b = new_vector(2 * n + 1);
     dtype * t = new_vector(2 * n + 1);
     dtype * l = new_vector(2 * n + 1);
     dtype * r = new_vector(2 * n + 1);
-
-    dtype** f_main = new_2darray(n + 1, n);
-    dtype** g_main = new_2darray(n, n + 1);
-    dtype * b_main = new_vector(n + 1);
-    dtype * t_main = new_vector(n + 1);
-    dtype * l_main = new_vector(n + 1);
-    dtype * r_main = new_vector(n + 1);
-
     
     dtype ** d = new_2darray(n, n);
 
