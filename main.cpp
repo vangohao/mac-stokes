@@ -31,6 +31,9 @@ int main(int argc, char* argv[])
     dtype * l_main = new_vector(n + 1);
     dtype * r_main = new_vector(n + 1);
 
+    
+    dtype ** d = new_2darray(n, n);
+
     initproblem(n, u, v, p, f, g, b, t, l, r, u_exact, v_exact);
     dtype r0, r0_div;
 
@@ -54,7 +57,7 @@ int main(int argc, char* argv[])
         g_main[n - 1][i] += r[2 * i] * n;
     }
 
-    residual(n, 0, u, v, p, f_main, g_main, b_main, t_main, l_main, r_main, rf, rg, rdiv, &r0, &r0_div);
+    residual(n, 0, u, v, p, f_main, g_main, d, b_main, t_main, l_main, r_main, rf, rg, rdiv, &r0, &r0_div);
     dtype e0;
     error(n, u, v, u_exact, v_exact, &e0);
     cout<<"initial residual: "<<r0<<" "<<r0_div<<endl;
@@ -69,7 +72,7 @@ int main(int argc, char* argv[])
     while (res / r0 > 1e-8 && cnt < (argc > 3 ?atoi(argv[3]) : 10000))
     {
         vcycle(n, level, (argc > 4 ?atoi(argv[4]) : 1), &dgs_iteration, u, v, p, f, g, b, t, l, r);
-        residual(n, 0, u, v, p, f_main, g_main, b_main, t_main, l_main, r_main, rf, rg, rdiv, &res, &res_div);
+        residual(n, 0, u, v, p, f_main, g_main, d, b_main, t_main, l_main, r_main, rf, rg, rdiv, &res, &res_div);
         cout<<"iteration "<<cnt<<", residual "<<res<<", "<<res_div<<endl;
         print(rf, n + 1, n,"residual f");
         print(rg, n, n + 1,"residual g");

@@ -5,7 +5,7 @@
 #include<math.h>
 using namespace std;
 #define sqr(x) ((x)*(x))
-int residual(int n, int level, dtype ** u, dtype ** v, dtype ** p, dtype ** f, dtype **g, dtype * b, dtype * t, dtype * l, dtype * r, dtype ** rf, dtype ** rg, dtype ** rdiv, dtype * r0, dtype * r1)
+int residual(int n, int level, dtype ** u, dtype ** v, dtype ** p, dtype ** f, dtype **g, dtype ** d, dtype * b, dtype * t, dtype * l, dtype * r, dtype ** rf, dtype ** rg, dtype ** rdiv, dtype * r0, dtype * r1)
 {
     dtype h = 1. / n;
     dtype tmp, delta;
@@ -47,44 +47,14 @@ int residual(int n, int level, dtype ** u, dtype ** v, dtype ** p, dtype ** f, d
         rg[n-1][i] = g[n-1][i] + (- (p[n-1][i] - p[n-1][i - 1]) * h /* + r[i] * h */ + v[n-2][i] + v[n-1][i + 1] + v[n-1][i - 1] - 3 * v[n-1][i]) / (h * h);
     }
 
-    //calculate internal residual
-    for(int i = 1; i < n - 1; i++)
+    //calculate divergence residual
+    for(int i = 0; i < n; i++)
     {
-        for(int j = 1; j < n - 1; j++)
+        for(int j = 0; j < n; j++)
         {
-            rdiv[i][j] = - (u[i+1][j] - u[i][j]) / h - (v[i][j+1] - v[i][j]) / h;
+            rdiv[i][j] = - (u[i+1][j] - u[i][j]) / h - (v[i][j+1] - v[i][j]) / h + d[i][j];
         }
     }
-
-    //calculate edge residual (i, n - 1)
-    for(int i = 1; i < n - 1; i++)
-    {
-        rdiv[i][n-1] = - (u[i+1][n-1] - u[i][n-1]) / h - (v[i][n] - v[i][n-1]) / h;
-    }
-
-    //calculate edge residual (i, 0)
-    for(int i = 1; i < n - 1; i++)
-    {
-        rdiv[i][0] = - (u[i+1][0] - u[i][0]) / h - (v[i][1] - v[i][0]) / h;
-    }
-
-    //calculate edge residual
-    for(int j = 1; j < n - 1; j++)
-    {
-        rdiv[n-1][j] = - (u[n][j] - u[n-1][j]) / h - (v[n-1][j+1] - v[n-1][j]) / h;
-    }
-
-    //calculate edge residual
-    for(int j = 1; j < n - 1; j++)
-    {
-        rdiv[0][j] = - (u[1][j] - u[0][j]) / h - (v[0][j+1] - v[0][j]) / h;
-    }
-
-    // vertux 
-    rdiv[0][0] = - (u[1][0] - u[0][0]) / h - (v[0][1] - v[0][0]) / h;
-    rdiv[n-1][n-1] = - (u[n][n-1] - u[n-1][n-1]) / h - (v[n-1][n] - v[n-1][n-1]) / h;
-    rdiv[n-1][0] = - (u[n][0] - u[n-1][0]) / h - (v[n-1][1] - v[n-1][0]) / h;
-    rdiv[0][n-1] = - (u[1][n-1] - u[0][n-1]) / h - (v[0][n] - v[0][n-1]) / h;
 
     double r0_sq = 0;
     for(int i = 0; i <= n; i++)
