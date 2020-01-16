@@ -1,9 +1,8 @@
 #include "project.h"
 #include <iostream>
 using namespace std;
-int vcycle(int n, int level, int iter, smoother_type smoother, dtype ** u, dtype ** v, dtype ** p, dtype ** f, dtype **g, dtype * b, dtype * t, dtype * l, dtype * r)
+int vcycle(int n, int level, int iter, int maxcnt, smoother_type smoother, dtype ** u, dtype ** v, dtype ** p, dtype ** f, dtype **g, dtype * b, dtype * t, dtype * l, dtype * r)
 {
-    dtype** res = new_2darray(n, n);
     dtype *** u_cycle = (dtype ***) malloc(level * sizeof(dtype **));
     dtype *** v_cycle = (dtype ***) malloc(level * sizeof(dtype **));
     dtype *** p_cycle = (dtype ***) malloc(level * sizeof(dtype **));
@@ -23,6 +22,8 @@ int vcycle(int n, int level, int iter, smoother_type smoother, dtype ** u, dtype
 
     
     dtype r0, r0_div;
+    dtype res, res_div;
+
     u_cycle[0] = u;
     v_cycle[0] = v;
     p_cycle[0] = p;
@@ -77,52 +78,83 @@ int vcycle(int n, int level, int iter, smoother_type smoother, dtype ** u, dtype
         g_cycle[0][n - 1][i] += r[2 * i] * n;
     }
 
-            residual(n  , 0 , u_cycle[0], v_cycle[0], p_cycle[0], f_cycle[0], g_cycle[0], d_cycle[0], b, t, l, r, rf_cycle[0], rg_cycle[0], rdiv_cycle[0], &r0, &r0_div);
-            print(rf_cycle[0], (n+1), n , "rf_before_cycle");
-            print(rg_cycle[0], (n), n+1 , "rg_before_cycle");
-    for(int i = 0; i<iter; i++)
+    residual(n, 0, u, v, p, f_cycle[0], g_cycle[0], d_cycle[0], b_cycle[0], t_cycle[0], l_cycle[0], r_cycle[0], rf_cycle[0], rg_cycle[0], rdiv_cycle[0], &r0, &r0_div);
+    cout<<"initial residual: "<<r0<<" "<<r0_div<<endl;
+
+    res = r0;
+    res_div = r0_div;
+    int cnt = 0;
+    
+    print(f_cycle[0], n + 1, n, "cycle[0] f");
+    print(g_cycle[0], n, n + 1, "cycle[0] g");
+    while (res / r0 > 1e-8 && cnt < maxcnt)
     {
-        (*smoother)(n, 0, u, v, p, f_cycle[0], g_cycle[0], d_cycle[0], b_cycle[0], t_cycle[0], l_cycle[0], r_cycle[0]);
-    }
-    print(u_cycle[0], n + 1, n, "u_cycle");
-    print(v_cycle[0], n, n+1, "v_cycle");
-    for(int lvl = 1; lvl < level; lvl ++)//TODO
-    {
-        residual(n >> (lvl - 1), lvl-1 , u_cycle[lvl - 1], v_cycle[lvl - 1], p_cycle[lvl - 1], f_cycle[lvl - 1], g_cycle[lvl - 1], d_cycle[lvl - 1], b, t, l, r, rf_cycle[lvl - 1], rg_cycle[lvl - 1], rdiv_cycle[lvl - 1], &r0, &r0_div);
-        restriction(n >> (lvl), lvl, f_cycle[lvl], g_cycle[lvl], d_cycle[lvl], rf_cycle[lvl - 1], rg_cycle[lvl - 1], rdiv_cycle[lvl - 1]);
-        print(rf_cycle[lvl-1], (n >>(lvl-1)) + 1, n >> (lvl-1), "rf_cycle");
-        print(rg_cycle[lvl-1], (n >>(lvl-1)), (n >> (lvl-1)) + 1, "rg_cycle");
-        print(f_cycle[lvl], (n >>(lvl)) + 1, n >> (lvl), "f_cycle");
-        print(g_cycle[lvl], (n >>(lvl)), (n >> (lvl)) + 1, "g_cycle");
+        for(int lvl = 0; lvl< level; lvl++)
+        {
+            if (lvl>0)
+            {
+                clear(u_cycle[lvl], (n >> (lvl)) + 1, n >> (lvl));
+                clear(v_cycle[lvl], n >> (lvl), (n >> (lvl)) + 1);
+                clear(p_cycle[lvl], n >> (lvl), n >> (lvl));
+            }
+        }
+        // vcycle(n, level, (argc > 4 ?atoi(argv[4]) : 1), &dgs_iteration, u, v, p, f, g, b, t, l, r);
+        // residual(n, 0, u, v, p, f_cycle[0], g_cycle[0], d_cycle[0], b_cycle[0], t_cycle[0], l_cycle[0], r_cycle[0], rf_cycle[0], rg_cycle[0], rdiv_cycle[0], &res, &res_div);
+        // print(rf, n + 1, n,"residual f");
+        // print(rg, n, n + 1,"residual g");
+
+        residual(n  , 0 , u_cycle[0], v_cycle[0], p_cycle[0], f_cycle[0], g_cycle[0], d_cycle[0], b, t, l, r, rf_cycle[0], rg_cycle[0], rdiv_cycle[0], &res, &res_div);
+        print(rf_cycle[0], (n+1), n , "rf_before_cycle");
+        print(rg_cycle[0], (n), n+1 , "rg_before_cycle");
         for(int i = 0; i<iter; i++)
         {
-            (*smoother)(n >> (lvl), lvl, u_cycle[lvl], v_cycle[lvl], p_cycle[lvl], f_cycle[lvl], g_cycle[lvl], d_cycle[lvl], b, t, l, r);
+            (*smoother)(n, 0, u, v, p, f_cycle[0], g_cycle[0], d_cycle[0], b_cycle[0], t_cycle[0], l_cycle[0], r_cycle[0]);
         }
-            residual(n >> (lvl), lvl , u_cycle[lvl], v_cycle[lvl], p_cycle[lvl], f_cycle[lvl], g_cycle[lvl], d_cycle[lvl], b, t, l, r, rf_cycle[lvl], rg_cycle[lvl], rdiv_cycle[lvl], &r0, &r0_div);
-        print(rf_cycle[lvl], (n >>(lvl)) + 1, n >> (lvl), "rf_cycle_rough");
-        print(rg_cycle[lvl], (n >>(lvl)), (n >> (lvl)) + 1, "rg_cycle_rough"); 
-        print(u_cycle[lvl], (n >> (lvl)) + 1, n >> (lvl), "u_cycle");
-    }
-    for(int lvl = level - 1; lvl > 0; lvl --) 
-    {
-        prolongation(n >> (lvl), lvl, u_cycle[lvl], v_cycle[lvl], p_cycle[lvl], u_cycle_pro[lvl - 1], v_cycle_pro[lvl - 1], p_cycle_pro[lvl - 1]);
-        print(u_cycle_pro[lvl-1], (n >> (lvl-1)) + 1, n >> (lvl-1), "u_cycle_pro");
-        print(v_cycle_pro[lvl-1], (n >> (lvl-1)) , (n >> (lvl-1))+1, "v_cycle_pro");
-        print(u_cycle[lvl-1], (n >> (lvl-1)) + 1, n >> (lvl-1), "u_cycle_bef");
-        print(v_cycle[lvl-1], (n >> (lvl-1)) , (n >> (lvl-1))+1, "v_cycle_bef");
-        correction(n >> (lvl -1), lvl-1, u_cycle[lvl - 1], v_cycle[lvl - 1], p_cycle[lvl - 1], u_cycle_pro[lvl - 1], v_cycle_pro[lvl - 1], p_cycle_pro[lvl - 1]);
-        print(u_cycle[lvl-1], (n >> (lvl-1)) + 1, n >> (lvl-1), "u_cycle_correct");
-        print(v_cycle[lvl-1], (n >> (lvl-1)) , (n >> (lvl-1))+1, "v_cycle_correct");
-        // for(int i = 0; i<iter; i++)
-        // {
-        //     (*smoother)(n >> (lvl - 1), lvl - 1, u_cycle[lvl-1], v_cycle[lvl-1], p_cycle[lvl-1], f_cycle[lvl-1], g_cycle[lvl-1], b, t, l, r);
-        // }
-        
-    }
+        print(u_cycle[0], n + 1, n, "u_cycle");
+        print(v_cycle[0], n, n+1, "v_cycle");
+        for(int lvl = 1; lvl < level; lvl ++)//TODO
+        {
+            residual(n >> (lvl - 1), lvl-1 , u_cycle[lvl - 1], v_cycle[lvl - 1], p_cycle[lvl - 1], f_cycle[lvl - 1], g_cycle[lvl - 1], d_cycle[lvl - 1], b, t, l, r, rf_cycle[lvl - 1], rg_cycle[lvl - 1], rdiv_cycle[lvl - 1], &res, &res_div);
+            restriction(n >> (lvl), lvl, f_cycle[lvl], g_cycle[lvl], d_cycle[lvl], rf_cycle[lvl - 1], rg_cycle[lvl - 1], rdiv_cycle[lvl - 1]);
+            print(rf_cycle[lvl-1], (n >>(lvl-1)) + 1, n >> (lvl-1), "rf_cycle");
+            print(rg_cycle[lvl-1], (n >>(lvl-1)), (n >> (lvl-1)) + 1, "rg_cycle");
+            print(f_cycle[lvl], (n >>(lvl)) + 1, n >> (lvl), "f_cycle");
+            print(g_cycle[lvl], (n >>(lvl)), (n >> (lvl)) + 1, "g_cycle");
+            for(int i = 0; i<iter; i++)
+            {
+                (*smoother)(n >> (lvl), lvl, u_cycle[lvl], v_cycle[lvl], p_cycle[lvl], f_cycle[lvl], g_cycle[lvl], d_cycle[lvl], b, t, l, r);
+            }
+            residual(n >> (lvl), lvl , u_cycle[lvl], v_cycle[lvl], p_cycle[lvl], f_cycle[lvl], g_cycle[lvl], d_cycle[lvl], b, t, l, r, rf_cycle[lvl], rg_cycle[lvl], rdiv_cycle[lvl], &res, &res_div);
+            print(rf_cycle[lvl], (n >>(lvl)) + 1, n >> (lvl), "rf_cycle_rough");
+            print(rg_cycle[lvl], (n >>(lvl)), (n >> (lvl)) + 1, "rg_cycle_rough"); 
+            print(u_cycle[lvl], (n >> (lvl)) + 1, n >> (lvl), "u_cycle");
+        }
+        for(int lvl = level - 1; lvl > 0; lvl --) 
+        {
+            prolongation(n >> (lvl), lvl, u_cycle[lvl], v_cycle[lvl], p_cycle[lvl], u_cycle_pro[lvl - 1], v_cycle_pro[lvl - 1], p_cycle_pro[lvl - 1]);
+            print(u_cycle_pro[lvl-1], (n >> (lvl-1)) + 1, n >> (lvl-1), "u_cycle_pro");
+            print(v_cycle_pro[lvl-1], (n >> (lvl-1)) , (n >> (lvl-1))+1, "v_cycle_pro");
+            print(u_cycle[lvl-1], (n >> (lvl-1)) + 1, n >> (lvl-1), "u_cycle_bef");
+            print(v_cycle[lvl-1], (n >> (lvl-1)) , (n >> (lvl-1))+1, "v_cycle_bef");
+            correction(n >> (lvl -1), lvl-1, u_cycle[lvl - 1], v_cycle[lvl - 1], p_cycle[lvl - 1], u_cycle_pro[lvl - 1], v_cycle_pro[lvl - 1], p_cycle_pro[lvl - 1]);
+            print(u_cycle[lvl-1], (n >> (lvl-1)) + 1, n >> (lvl-1), "u_cycle_correct");
+            print(v_cycle[lvl-1], (n >> (lvl-1)) , (n >> (lvl-1))+1, "v_cycle_correct");
+            // for(int i = 0; i<iter; i++)
+            // {
+            //     (*smoother)(n >> (lvl - 1), lvl - 1, u_cycle[lvl-1], v_cycle[lvl-1], p_cycle[lvl-1], f_cycle[lvl-1], g_cycle[lvl-1], b, t, l, r);
+            // }
+            
+        }
 
-            residual(n  , 0 , u_cycle[0], v_cycle[0], p_cycle[0], f_cycle[0], g_cycle[0], d_cycle[0], b, t, l, r, rf_cycle[0], rg_cycle[0], rdiv_cycle[0], &r0, &r0_div);
-            print(rf_cycle[0], (n+1), n , "rf_after_cycle");
-            print(rg_cycle[0], (n), n+1 , "rg_after_cycle");
+        residual(n  , 0 , u_cycle[0], v_cycle[0], p_cycle[0], f_cycle[0], g_cycle[0], d_cycle[0], b, t, l, r, rf_cycle[0], rg_cycle[0], rdiv_cycle[0], &res, &res_div);
+        print(rf_cycle[0], (n+1), n , "rf_after_cycle");
+        print(rg_cycle[0], (n), n+1 , "rg_after_cycle");
+
+
+        cout<<"iteration "<<cnt<<", residual "<<res<<", "<<res_div<<endl;
+        cnt ++;
+    }
+    
     for(int lvl = 0; lvl< level; lvl++)
     {
         if (lvl>0)
@@ -146,7 +178,6 @@ int vcycle(int n, int level, int iter, smoother_type smoother, dtype ** u, dtype
         delete[] r_cycle[lvl];
     }
 
-    delete[] res ;
     delete[] u_cycle ;
     delete[] v_cycle ;
     delete[] p_cycle ;
@@ -163,4 +194,5 @@ int vcycle(int n, int level, int iter, smoother_type smoother, dtype ** u, dtype
     delete[] t_cycle ;
     delete[] l_cycle ;
     delete[] r_cycle ;
+    return cnt;
 }

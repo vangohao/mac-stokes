@@ -28,3 +28,13 @@ void print(dtype ** a, int n, int m, const char * name)
     //     cout<<endl;
     // }
 }
+void clear(dtype ** a, int n, int m)
+{
+    for(int i = 0; i < n; i++)
+    {
+        for(int j = 0; j < m; j++)
+        {
+            a[i][j] = 0;
+        }
+    }
+}
