@@ -66,9 +66,9 @@ int main(int argc, char* argv[])
     
         print(f_main, n + 1, n, "main f");
         print(g_main, n, n + 1, "main g");
-    while (res / r0 > 1e-8 && cnt < 10000)
+    while (res / r0 > 1e-8 && cnt < (argc > 3 ?atoi(argv[3]) : 10000))
     {
-        vcycle(n, level, 1, &dgs_iteration, u, v, p, f, g, b, t, l, r);
+        vcycle(n, level, (argc > 4 ?atoi(argv[4]) : 1), &dgs_iteration, u, v, p, f, g, b, t, l, r);
         residual(n, 0, u, v, p, f_main, g_main, b_main, t_main, l_main, r_main, rf, rg, rdiv, &res, &res_div);
         cout<<"iteration "<<cnt<<", residual "<<res<<", "<<res_div<<endl;
         print(rf, n + 1, n,"residual f");
