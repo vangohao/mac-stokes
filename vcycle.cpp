@@ -127,10 +127,10 @@ int vcycle(int n, int level, int iter, int maxcnt, smoother_type smoother, dtype
             correction(n >> (lvl -1), lvl-1, u_cycle[lvl - 1], v_cycle[lvl - 1], p_cycle[lvl - 1], u_cycle_pro[lvl - 1], v_cycle_pro[lvl - 1], p_cycle_pro[lvl - 1]);
             print(u_cycle[lvl-1], (n >> (lvl-1)) + 1, n >> (lvl-1), "u_cycle_correct");
             print(v_cycle[lvl-1], (n >> (lvl-1)) , (n >> (lvl-1))+1, "v_cycle_correct");
-            // for(int i = 0; i<iter; i++)
-            // {
-            //     (*smoother)(n >> (lvl - 1), lvl - 1, u_cycle[lvl-1], v_cycle[lvl-1], p_cycle[lvl-1], f_cycle[lvl-1], g_cycle[lvl-1], b, t, l, r);
-            // }
+            for(int i = 0; i<iter; i++)
+            {
+                (*smoother)(n >> (lvl - 1), lvl - 1, u_cycle[lvl - 1], v_cycle[lvl - 1], p_cycle[lvl - 1], f_cycle[lvl - 1], g_cycle[lvl - 1], d_cycle[lvl - 1], b, t, l, r);
+            }
             
         }
 
