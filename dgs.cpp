@@ -75,8 +75,8 @@ int dgs_iteration(int n, int level, dtype ** u, dtype ** v, dtype ** p, dtype **
         u[i+1][n-1] += delta;
         v[i][n-1] -= delta;
         tmp = res / 3.;
-        // p[i][n-1] += tmp * 4.;
-        p[i][n-1] += res;
+        p[i][n-1] += tmp * 4.;
+        // p[i][n-1] += res;
         p[i+1][n-1] -= tmp;
         p[i-1][n-1] -= tmp;
         p[i][n-2] -= tmp;
@@ -91,8 +91,8 @@ int dgs_iteration(int n, int level, dtype ** u, dtype ** v, dtype ** p, dtype **
         u[i+1][0] += delta;
         v[i][1] += delta;
         tmp = res / 3.;
-        // p[i][0] += tmp * 4.;
-        p[i][0] += res;
+        p[i][0] += tmp * 4.;
+        // p[i][0] += res;
         p[i+1][0] -= tmp;
         p[i-1][0] -= tmp;
         p[i][1] -= tmp;
@@ -107,8 +107,8 @@ int dgs_iteration(int n, int level, dtype ** u, dtype ** v, dtype ** p, dtype **
         v[n-1][j] -= delta;
         v[n-1][j+1] += delta;
         tmp = res / 3.;
-        // p[n-1][j] += tmp * 4.;
-        p[n-1][j] += res;
+        p[n-1][j] += tmp * 4.;
+        // p[n-1][j] += res;
         p[n-2][j] -= tmp;
         p[n-1][j+1] -= tmp;
         p[n-1][j-1] -= tmp;
@@ -123,8 +123,8 @@ int dgs_iteration(int n, int level, dtype ** u, dtype ** v, dtype ** p, dtype **
         v[0][j] -= delta;
         v[0][j+1] += delta;
         tmp = res / 3.;
-        // p[0][j] += tmp * 4.;
-        p[0][j] += res;
+        p[0][j] += tmp * 4.;
+        // p[0][j] += res;
         p[1][j] -= tmp;
         p[0][j+1] -= tmp;
         p[0][j-1] -= tmp;
@@ -135,8 +135,8 @@ int dgs_iteration(int n, int level, dtype ** u, dtype ** v, dtype ** p, dtype **
     delta = res * h / 2;
     u[1][0] += delta;
     v[0][1] += delta;
-    // p[0][0] += 2 * res;
-    p[0][0] += res;
+    p[0][0] += 2 * res;
+    // p[0][0] += res;
     p[1][0] -= res / 2;
     p[0][1] -= res / 2;
     // vertux 
@@ -144,8 +144,8 @@ int dgs_iteration(int n, int level, dtype ** u, dtype ** v, dtype ** p, dtype **
     delta = res * h / 2;
     u[n-1][n-1] -= delta;
     v[n-1][n-1] -= delta;
-    // p[n-1][n-1] += 2 * res;
-    p[n-1][n-1] += res;
+    p[n-1][n-1] += 2 * res;
+    // p[n-1][n-1] += res;
     p[n-2][n-1] -= res / 2;
     p[n-1][n-2] -= res / 2;
     // vertux 
@@ -153,8 +153,8 @@ int dgs_iteration(int n, int level, dtype ** u, dtype ** v, dtype ** p, dtype **
     delta = res * h / 2;
     u[n-1][0] -= delta;
     v[n-1][1] += delta;
-    // p[n-1][0] += 2 * res;
-    p[n-1][0] += res;
+    p[n-1][0] += 2 * res;
+    // p[n-1][0] += res;
     p[n-2][0] -= res / 2;
     p[n-1][1] -= res / 2;
     // vertux 
@@ -162,8 +162,8 @@ int dgs_iteration(int n, int level, dtype ** u, dtype ** v, dtype ** p, dtype **
     delta = res * h / 2;
     u[1][n-1] += delta;
     v[0][n-1] -= delta;
-    // p[0][n-1] += 2 * res;
-    p[0][n-1] += res;
+    p[0][n-1] += 2 * res;
+    // p[0][n-1] += res;
     p[1][n-1] -= res / 2;
     p[0][n-2] -= res / 2;
 
