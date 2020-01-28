@@ -9,10 +9,13 @@ int prolongation(int n, int level, dtype ** ur, dtype ** vr, dtype ** pr, dtype 
 int restriction(int n, int level, dtype ** ur, dtype ** vr, dtype ** pr, dtype ** u, dtype ** v, dtype ** p);
 int error(int n, dtype ** u, dtype ** v, dtype ** u_exact, dtype ** v_exact, dtype * en);
 int correction(int n, int level, dtype ** ur, dtype ** vr, dtype ** pr, dtype ** u, dtype ** v, dtype ** p);
-
+int cg(int n, int level, int kmax, dtype epsb, dtype **u, dtype **v, dtype **rf, dtype **rg);
+int uzawa_iteration(int n, int level, dtype ** u, dtype ** v, dtype ** p, dtype ** f, dtype **g, dtype ** d, dtype * b, dtype * t, dtype * l, dtype * r);
+int inexact_uzawa_iteration(int n, int level, dtype ** u, dtype ** v, dtype ** p, dtype ** f, dtype **g, dtype ** d, dtype * b, dtype * t, dtype * l, dtype * r);
 
 dtype **new_2darray(int n, int m);
 dtype *new_vector(int n);
+void delete_2darray(dtype ** a, int n);
 void print(dtype ** a, int n, int m, const char * name);
 void clear(dtype ** a, int n, int m);
 

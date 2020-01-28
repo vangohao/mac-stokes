@@ -16,6 +16,14 @@ dtype *new_vector(int n)
 {
     return (dtype*)calloc(n, sizeof(dtype));
 }
+void delete_2darray(dtype ** a, int n)
+{
+    for(int i = 0; i < n; i++)
+    {
+        free(a[i]);
+    }
+    free(a);
+}
 void print(dtype ** a, int n, int m, const char * name)
 {
     // cout<<"start printing "<<name<<":"<<endl;

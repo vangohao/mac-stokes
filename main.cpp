@@ -3,11 +3,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <time.h>
+
 using namespace std;
 int main(int argc, char* argv[])
 {
-    int n = argc > 1 ? atoi(argv[1]) : 64;
-    int level = argc > 2 ? atoi(argv[2]): 6;
+    smoother_type* smt[3] = {&dgs_iteration, &uzawa_iteration, &inexact_uzawa_iteration};
+    int smtnum = argc > 1? atoi(argv[1]) : 0;
+    int n = argc > 2 ? atoi(argv[2]) : 64;
+    int level = argc > 3 ? atoi(argv[3]): 6;
     dtype** u = new_2darray(n + 1, n);
     dtype** v = new_2darray(n, n + 1);
     dtype** p = new_2darray(n, n);
@@ -26,19 +30,34 @@ int main(int argc, char* argv[])
     initproblem(n, u, v, p, f, g, b, t, l, r, u_exact, v_exact);
     dtype r0, r0_div;
 
-    int iter = argc > 3 ?atoi(argv[3]) : 3;
-    int maxcnt = argc > 4 ?atoi(argv[4]) : 10000;
+    int iter = argc > 4 ?atoi(argv[4]) : 3;
+    int maxcnt = argc > 5 ?atoi(argv[5]) : 10000;
     int cnt;
 
     dtype e0;
     error(n, u, v, u_exact, v_exact, &e0);
 
-    cnt = vcycle(n, level, iter, maxcnt, &dgs_iteration, u, v, p, f, g, b, t, l, r);
+    clock_t start, end;
+    time_t wstart,wend;
+    double cpu_time_used, wall_time_used;
+
+    start = clock();
+    wstart = time(NULL);
+
+    cnt = vcycle(n, level, iter, maxcnt, smt[smtnum], u, v, p, f, g, b, t, l, r);
+
+    end = clock();
+    wend = time(NULL);
+
+    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+    wall_time_used = difftime(wend, wstart);
     
     dtype en;
     error(n, u, v, u_exact, v_exact, &en);
 
     cout<<"result error:" << en<<" "<<"initial error:"<<e0<<endl;
     cout<<"iteration cnt:" <<cnt<<endl;
+    cout<<"CPU time:"<<cpu_time_used<<endl;
+    cout<<"Wall time:"<<wall_time_used<<endl;
     return 0;
 }
