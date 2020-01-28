@@ -19,6 +19,6 @@ int error(int n, dtype ** u, dtype ** v, dtype ** u_exact, dtype ** v_exact, dty
     }
     print(u_exact, n - 1, n, "u_exact");
     print(v_exact, n, n - 1, "v_exact");
-    *en = sqr(en_sq * h);
+    *en = sqrt(en_sq * h);
     return 0;
 }
