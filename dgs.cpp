@@ -1,7 +1,48 @@
 #include <iostream>
 #include "project.h"
 using namespace std;
-int dgs_iteration(int n, int level, dtype ** u, dtype ** v, dtype ** p, dtype ** f, dtype **g, dtype ** d, dtype * b, dtype * t, dtype * l, dtype * r)
+int GS_uv(int n, int level, dtype ** u, dtype ** v, dtype ** f, dtype **g)
+{
+    dtype h = 1. / n;
+    //update u
+    // j = 0;
+    for(int i = 1; i< n;i++)
+    {
+        u[i][0] = (f[i][0] * h * h + u[i][1] + u[i + 1][0] + u[i - 1][0]) / 3.;
+    }
+    for(int j = 1; j < n - 1; j++)
+    {
+        for(int i = 1; i < n; i++)
+        {
+            u[i][j] = (f[i][j] * h * h + u[i+1][j] + u[i-1][j] + u[i][j+1] + u[i][j-1]) / 4.;
+        }
+    }
+    // j = n - 1;
+    for(int i = 1; i< n;i++)
+    {
+        u[i][n-1] = (f[i][n-1] * h * h + u[i][n-2] + u[i + 1][n-1] + u[i - 1][n-1]) / 3.;
+    }
+
+    //update v (j,i)
+    // j = 0;
+    for(int i = 1; i< n;i++)
+    {
+        v[0][i] = (g[0][i] * h * h + v[1][i] + v[0][i + 1] + v[0][i - 1]) / 3.;
+    }
+    for(int j = 1; j < n - 1; j++)
+    {
+        for(int i = 1; i < n; i++)
+        {
+            v[j][i] = (g[j][i] * h * h + v[j][i+1] + v[j][i-1] + v[j+1][i] + v[j-1][i]) / 4.;
+        }
+    }
+    // j = n - 1;
+    for(int i = 1; i< n;i++)
+    {
+        v[n-1][i] = (g[n-1][i] * h * h + v[n-2][i] + v[n-1][i + 1] + v[n-1][i - 1]) / 3.;
+    }
+}
+int dgs_iteration(int n, int level, int mgiter, int mgv0, int mgv1, dtype ** u, dtype ** v, dtype ** p, dtype ** f, dtype **g, dtype ** d, dtype * b, dtype * t, dtype * l, dtype * r)
 {
     dtype h = 1. / n;
     dtype tmp, delta;

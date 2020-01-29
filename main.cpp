@@ -8,10 +8,19 @@
 using namespace std;
 int main(int argc, char* argv[])
 {
-    smoother_type* smt[3] = {&dgs_iteration, &uzawa_iteration, &inexact_uzawa_iteration};
+    smoother_type* smt[4] = {&dgs_iteration, &uzawa_iteration, &inexact_uzawa_iteration, &pcg_uzawa_iteration};
     int smtnum = argc > 1? atoi(argv[1]) : 0;
     int n = argc > 2 ? atoi(argv[2]) : 64;
-    int level = argc > 3 ? atoi(argv[3]): 6;
+    int level = argc > 3 ? atoi(argv[3]): 1;
+    int v0 = argc > 4 ?atoi(argv[4]) : 3;
+    int v1 = argc > 5 ?atoi(argv[5]) : 3;
+    int mgiter = argc > 6 ?atoi(argv[6]) : 1; //only available for pcg_uzawa
+    int maxcnt = argc > 7 ?atoi(argv[7]) : 10000;
+    if (smtnum != 3 && mgiter != 1)
+    {
+        fprintf(stderr, "only method 3 can set mgiter!\n");
+        mgiter = 1;
+    }
     dtype** u = new_2darray(n + 1, n);
     dtype** v = new_2darray(n, n + 1);
     dtype** p = new_2darray(n, n);
@@ -30,8 +39,6 @@ int main(int argc, char* argv[])
     initproblem(n, u, v, p, f, g, b, t, l, r, u_exact, v_exact);
     dtype r0, r0_div;
 
-    int iter = argc > 4 ?atoi(argv[4]) : 3;
-    int maxcnt = argc > 5 ?atoi(argv[5]) : 10000;
     int cnt;
 
     dtype e0;
@@ -44,7 +51,7 @@ int main(int argc, char* argv[])
     start = clock();
     wstart = time(NULL);
 
-    cnt = vcycle(n, level, iter, maxcnt, smt[smtnum], u, v, p, f, g, b, t, l, r);
+    cnt = vcycle(n, level, mgiter, v0, v1, maxcnt, smt[smtnum], u, v, p, f, g, b, t, l, r);
 
     end = clock();
     wend = time(NULL);

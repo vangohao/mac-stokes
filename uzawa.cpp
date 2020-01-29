@@ -1,7 +1,7 @@
 #include <limits.h>
 #include <stdio.h>
 #include "project.h"
-int uzawa_iteration(int n, int level, dtype ** u, dtype ** v, dtype ** p, dtype ** f, dtype **g, dtype ** d, dtype * b, dtype * t, dtype * l, dtype * r)
+int uzawa_iteration(int n, int level, int mgiter, int mgv0, int mgv1, dtype ** u, dtype ** v, dtype ** p, dtype ** f, dtype **g, dtype ** d, dtype * b, dtype * t, dtype * l, dtype * r)
 {
     // printf("begin UZAWA\n");
     dtype alpha = 1.;

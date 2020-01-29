@@ -2,14 +2,14 @@
 #include <math.h>
 #include <stdio.h>
 #include "project.h"
-int cg(int n, int level, int kmax, dtype eps, dtype **u, dtype **v, dtype **bf, dtype **bg)
+int pcg(int n, int level, int mgiter, int mgv0, int mgv1, int kmax, dtype eps, dtype **u, dtype **v, dtype **bf, dtype **bg)
 {
     int k = 0;
-    dtype rho = 0, bn = 0, rho1, beta, alpha, ptw;
+    dtype rho = 0, bn = 0, mu, mu1, mu_tmp, beta, alpha, ptw;
     dtype h = 1. / n;
-    dtype **pu, **pv, **wu, **wv;
-    rho=0;
+    dtype **pu, **pv, **wu, **wv, **zu, ** zv;
     bn=0;
+    rho=0;
     #pragma omp parallel for reduction(+:bn)
     for(int i = 0; i < n + 1; ++i)
         for(int j = 0; j < n; ++j)
@@ -70,53 +70,91 @@ int cg(int n, int level, int kmax, dtype eps, dtype **u, dtype **v, dtype **bf, 
         bg[n-1][i] += (v[n-2][i] + v[n-1][i + 1] + v[n-1][i - 1] - 3 * v[n-1][i]) / (h * h);
     }
 
-    #pragma omp parallel for reduction(+:rho)
+    // #pragma omp parallel for reduction(+:rho)
     for(int i = 0; i < n + 1; ++i)
         for(int j = 0; j < n; ++j)
         {
             rho += bf[i][j] * bf[i][j];
         }
-    #pragma omp parallel for reduction(+:rho)
+    // #pragma omp parallel for reduction(+:rho)
     for(int i = 0; i < n; ++i)
         for(int j = 0; j < n + 1; ++j)
         {
             rho += bg[i][j] * bg[i][j];
         }
-    bn = rho; // FIXME
-
+    bn = rho; //FIXME
+    
     pu = new_2darray(n + 1, n);pv = new_2darray(n, n + 1);
     wu = new_2darray(n + 1, n);wv = new_2darray(n, n + 1);
-    #pragma omp parallel for 
-    for(int i = 0; i < n + 1; ++i)
-        for(int j = 0; j < n; ++j)
-        {
-            pu[i][j] = bf[i][j];
-        }
-    #pragma omp parallel for 
-    for(int i = 0; i < n; ++i)
-        for(int j = 0; j < n + 1; ++j)
-        {
-            pv[i][j] = bg[i][j];
-        }
+    zu = new_2darray(n + 1, n);zv = new_2darray(n, n + 1);
+
     while ( rho > (eps * eps) * bn && k < kmax)
     {
-        // printf("CG iterateion %d, rho/bn=%lf, rho=%lf, bn=%lf\n", k, rho/bn, rho, bn);
+        printf("CG iterateion %d, rho/bn=%lf, rho=%lf, bn=%lf\n", k, rho/bn, rho, bn);
         print(u, n + 1, n, "u");
         print(v, n, n + 1, "v");
-        if (k)
+
+        // #pragma omp parallel for reduction(+:rho)
+        // for(int i = 0; i < n + 1; ++i)
+        //     for(int j = 0; j < n; ++j)
+        //     {
+        //         zu[i][j] = bf[i][j];
+        //     }
+        // #pragma omp parallel for reduction(+:rho)
+        // for(int i = 0; i < n; ++i)
+        //     for(int j = 0; j < n + 1; ++j)
+        //     {
+        //         zv[i][j] = bg[i][j];
+        //     }
+        vcycle_precondition(n, level, mgiter, mgv0, mgv1, zu, zv, bf, bg);
+        
+
+        mu_tmp = 0.;
+        // #pragma omp parallel for reduction(+:rho)
+        for(int i = 0; i < n + 1; ++i)
+            for(int j = 0; j < n; ++j)
+            {
+                mu_tmp += zu[i][j] * bf[i][j];
+            }
+        // #pragma omp parallel for reduction(+:rho)
+        for(int i = 0; i < n; ++i)
+            for(int j = 0; j < n + 1; ++j)
+            {
+                mu_tmp += zv[i][j] * bg[i][j];
+            }
+
+        if (k == 0)
         {
-            beta = rho / rho1;
+            #pragma omp parallel for 
+            for(int i = 0; i < n + 1; ++i)
+                for(int j = 0; j < n; ++j)
+                {
+                    pu[i][j] = zu[i][j];
+                }
+            #pragma omp parallel for 
+            for(int i = 0; i < n; ++i)
+                for(int j = 0; j < n + 1; ++j)
+                {
+                    pv[i][j] = zv[i][j];
+                }
+            mu = mu_tmp;
+        }
+        else
+        {
+            mu1 = mu;
+            mu = mu_tmp;
+            beta = mu / mu1;
     #pragma omp parallel for 
             for(int i = 0; i < n + 1; ++i)
                 for(int j = 0; j < n; ++j)
                 {
-                    pu[i][j] = bf[i][j] + beta * pu[i][j];
+                    pu[i][j] = zu[i][j] + beta * pu[i][j];
                 }
     #pragma omp parallel for 
             for(int i = 0; i < n; ++i)
                 for(int j = 0; j < n + 1; ++j)
                 {
-                    pv[i][j] = bg[i][j] + beta * pv[i][j];
+                    pv[i][j] = zv[i][j] + beta * pv[i][j];
                 }
         }
         //wu
@@ -176,7 +214,7 @@ int cg(int n, int level, int kmax, dtype eps, dtype **u, dtype **v, dtype **bf, 
             {
                 ptw += pv[i][j] * wv[i][j];
             }
-        alpha = rho / ptw;
+        alpha = mu / ptw;
     #pragma omp parallel for 
         for(int i = 0; i < n + 1; ++i)
             for(int j = 0; j < n; ++j)
@@ -203,7 +241,6 @@ int cg(int n, int level, int kmax, dtype eps, dtype **u, dtype **v, dtype **bf, 
                 bg[i][j] -= alpha * wv[i][j];
             }
         
-        rho1 = rho;
         rho = 0;
     #pragma omp parallel for reduction(+:rho)
         for(int i = 0; i < n + 1; ++i)
@@ -223,4 +260,6 @@ int cg(int n, int level, int kmax, dtype eps, dtype **u, dtype **v, dtype **bf, 
     delete_2darray(pv, n);
     delete_2darray(wu, n + 1);
     delete_2darray(wv, n);
+    delete_2darray(zu, n + 1);
+    delete_2darray(zv, n);
 }

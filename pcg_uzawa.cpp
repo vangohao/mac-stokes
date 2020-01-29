@@ -1,7 +1,7 @@
 #include <limits.h>
 #include <stdio.h>
 #include "project.h"
-int inexact_uzawa_iteration(int n, int level, int mgiter, int mgv0, int mgv1, dtype ** u, dtype ** v, dtype ** p, dtype ** f, dtype **g, dtype ** d, dtype * b, dtype * t, dtype * l, dtype * r)
+int pcg_uzawa_iteration(int n, int level, int mgiter, int mgv0, int mgv1, dtype ** u, dtype ** v, dtype ** p, dtype ** f, dtype **g, dtype ** d, dtype * b, dtype * t, dtype * l, dtype * r)
 {
     // printf("begin UZAWA\n");
     dtype alpha = 1.;
@@ -45,8 +45,12 @@ int inexact_uzawa_iteration(int n, int level, int mgiter, int mgv0, int mgv1, dt
     {
         bg[n-1][i] = g[n-1][i] + (- (p[n-1][i] - p[n-1][i - 1]) * h) / (h * h);
     }
-    int cgiter = 100;
-    cg(n, level, cgiter, 1e-2, u, v, bf, bg);
+    // cg(n, level, 2 * n * (n - 1), 1e-9, u, v, bf, bg);
+    int ll = 0, nn=n;
+    while(nn % 2 == 0) {l ++; nn /= 2;}
+    //uzawa
+    printf("pcg level, %d %d %d %d\n", level, mgiter, mgv0, mgv1);
+    pcg(n, level, mgiter, mgv0, mgv1, 1000, 1e-3, u, v, bf, bg);
     print(u, n + 1, n, "u");
     print(v, n, n + 1, "v");
     for(int i = 0; i < n; i++)

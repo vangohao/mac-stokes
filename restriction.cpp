@@ -1,7 +1,7 @@
 #include <iostream>
 #include "project.h"
 using namespace std;
-int restriction(int n, int level, dtype ** ur, dtype ** vr, dtype ** pr, dtype ** u, dtype ** v, dtype ** p)
+int restriction_uv(int n, int level, dtype ** ur, dtype ** vr, dtype ** u, dtype ** v)
 {
     // for u
     for(int j = 0; j < n; j++)
@@ -35,6 +35,10 @@ int restriction(int n, int level, dtype ** ur, dtype ** vr, dtype ** pr, dtype *
         }
     }
 
+}
+int restriction(int n, int level, dtype ** ur, dtype ** vr, dtype ** pr, dtype ** u, dtype ** v, dtype ** p)
+{
+    restriction_uv(n, level, ur, vr, u, v);
     //for p
     for(int i = 0; i < n; i++)
     {
