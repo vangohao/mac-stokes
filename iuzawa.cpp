@@ -45,7 +45,7 @@ int inexact_uzawa_iteration(int n, int level, int mgiter, int mgv0, int mgv1, dt
     {
         bg[n-1][i] = g[n-1][i] + (- (p[n-1][i] - p[n-1][i - 1]) * h) / (h * h);
     }
-    int cgiter = 100;
+    int cgiter = 10;
     cg(n, level, cgiter, 1e-2, u, v, bf, bg);
     print(u, n + 1, n, "u");
     print(v, n, n + 1, "v");
@@ -53,7 +53,7 @@ int inexact_uzawa_iteration(int n, int level, int mgiter, int mgv0, int mgv1, dt
     {
         for(int j = 0; j < n; j++)
         {
-            btu[i][j] = (u[i+1][j] - u[i][j]) / h + (v[i][j+1] - v[i][j]) / h;
+            btu[i][j] = (u[i+1][j] - u[i][j]) / h + (v[i][j+1] - v[i][j]) / h - d[i][j];
         }
     }
     for(int i = 0; i < n; i++)

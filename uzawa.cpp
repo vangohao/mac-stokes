@@ -52,7 +52,7 @@ int uzawa_iteration(int n, int level, int mgiter, int mgv0, int mgv1, dtype ** u
     {
         for(int j = 0; j < n; j++)
         {
-            btu[i][j] = (u[i+1][j] - u[i][j]) / h + (v[i][j+1] - v[i][j]) / h;
+            btu[i][j] = (u[i+1][j] - u[i][j]) / h + (v[i][j+1] - v[i][j]) / h - d[i][j];
         }
     }
     for(int i = 0; i < n; i++)
