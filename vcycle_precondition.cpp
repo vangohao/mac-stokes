@@ -3,7 +3,6 @@
 using namespace std;
 int vcycle_precondition(int n, int level, int mgiter, int mgv0, int mgv1, dtype ** u, dtype ** v, dtype ** f, dtype **g)
 {
-    cout<<"VCYCLE_PRECONDITION"<<endl;
     dtype *** u_cycle = (dtype ***) malloc(level * sizeof(dtype **));
     dtype *** v_cycle = (dtype ***) malloc(level * sizeof(dtype **));
     dtype *** u_cycle_pro = (dtype ***) malloc(level * sizeof(dtype **));

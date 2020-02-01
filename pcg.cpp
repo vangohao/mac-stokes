@@ -90,7 +90,7 @@ int pcg(int n, int level, int mgiter, int mgv0, int mgv1, int kmax, dtype eps, d
 
     while ( (rho > (eps * eps) * bn1 && rho > (1e-18) * bn) && k < kmax)
     {
-        printf("CG iterateion %d, rho/bn=%lf, rho=%lf, bn=%lf\n", k, rho/bn, rho, bn);
+        // printf("CG iterateion %d, rho/bn=%lf, rho=%lf, bn=%lf\n", k, rho/bn, rho, bn);
         print(u, n + 1, n, "u");
         print(v, n, n + 1, "v");
 
