@@ -50,7 +50,7 @@ int pcg_uzawa_iteration(int n, int level, int mgiter, int mgv0, int mgv1, dtype 
     int ll = 0, nn=n;
     while(nn % 2 == 0) {l ++; nn /= 2;}
     //uzawa
-    printf("pcg level, %d %d %d %d\n", pcg_level, mgiter, mgv0, mgv1);
+    // printf("pcg level, %d %d %d %d\n", pcg_level, mgiter, mgv0, mgv1);
     pcg(n, pcg_level, mgiter, mgv0, mgv1, 10, 1e-6, u, v, bf, bg);
     print(u, n + 1, n, "u");
     print(v, n, n + 1, "v");
