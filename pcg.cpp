@@ -5,7 +5,7 @@
 int pcg(int n, int level, int mgiter, int mgv0, int mgv1, int kmax, dtype eps, dtype **u, dtype **v, dtype **bf, dtype **bg)
 {
     int k = 0;
-    dtype rho = 0, bn = 0, mu, mu1, mu_tmp, beta, alpha, ptw;
+    dtype rho = 0, bn = 0, bn1 = 0, mu, mu1, mu_tmp, beta, alpha, ptw;
     dtype h = 1. / n;
     dtype **pu, **pv, **wu, **wv, **zu, ** zv;
     bn=0;
@@ -82,13 +82,13 @@ int pcg(int n, int level, int mgiter, int mgv0, int mgv1, int kmax, dtype eps, d
         {
             rho += bg[i][j] * bg[i][j];
         }
-    bn = rho; //FIXME
+    bn1 = rho; //FIXME
     
     pu = new_2darray(n + 1, n);pv = new_2darray(n, n + 1);
     wu = new_2darray(n + 1, n);wv = new_2darray(n, n + 1);
     zu = new_2darray(n + 1, n);zv = new_2darray(n, n + 1);
 
-    while ( rho > (eps * eps) * bn && k < kmax)
+    while ( (rho > (eps * eps) * bn1 && rho > (1e-18) * bn) && k < kmax)
     {
         printf("CG iterateion %d, rho/bn=%lf, rho=%lf, bn=%lf\n", k, rho/bn, rho, bn);
         print(u, n + 1, n, "u");

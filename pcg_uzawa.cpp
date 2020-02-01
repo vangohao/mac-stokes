@@ -1,6 +1,7 @@
 #include <limits.h>
 #include <stdio.h>
 #include "project.h"
+extern int pcg_level;
 int pcg_uzawa_iteration(int n, int level, int mgiter, int mgv0, int mgv1, dtype ** u, dtype ** v, dtype ** p, dtype ** f, dtype **g, dtype ** d, dtype * b, dtype * t, dtype * l, dtype * r)
 {
     // printf("begin UZAWA\n");
@@ -49,8 +50,8 @@ int pcg_uzawa_iteration(int n, int level, int mgiter, int mgv0, int mgv1, dtype 
     int ll = 0, nn=n;
     while(nn % 2 == 0) {l ++; nn /= 2;}
     //uzawa
-    printf("pcg level, %d %d %d %d\n", level, mgiter, mgv0, mgv1);
-    pcg(n, level, mgiter, mgv0, mgv1, 1000, 1e-3, u, v, bf, bg);
+    printf("pcg level, %d %d %d %d\n", pcg_level, mgiter, mgv0, mgv1);
+    pcg(n, pcg_level, mgiter, mgv0, mgv1, 10, 1e-6, u, v, bf, bg);
     print(u, n + 1, n, "u");
     print(v, n, n + 1, "v");
     for(int i = 0; i < n; i++)

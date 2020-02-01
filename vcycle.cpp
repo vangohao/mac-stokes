@@ -96,7 +96,7 @@ int vcycle(int n, int level, int mgiter, int mgv0, int mgv1, int maxcnt, smoothe
         print(rg_cycle[0], (n), n+1 , "rg_before_cycle");
         for(int i = 0; i<mgv0; i++)
         {
-            (*smoother)(n, level, mgiter, mgv0, mgv1, u, v, p, f_cycle[0], g_cycle[0], d_cycle[0], b_cycle[0], t_cycle[0], l_cycle[0], r_cycle[0]);
+            (*smoother)(n, 0, mgiter, mgv0, mgv1, u, v, p, f_cycle[0], g_cycle[0], d_cycle[0], b_cycle[0], t_cycle[0], l_cycle[0], r_cycle[0]);
         }
         print(u_cycle[0], n + 1, n, "u_cycle");
         print(v_cycle[0], n, n+1, "v_cycle");
@@ -110,7 +110,7 @@ int vcycle(int n, int level, int mgiter, int mgv0, int mgv1, int maxcnt, smoothe
             print(g_cycle[lvl], (n >>(lvl)), (n >> (lvl)) + 1, "g_cycle");
             for(int i = 0; i<mgv0; i++)
             {
-                (*smoother)(n >> (lvl), level, mgiter, mgv0, mgv1, u_cycle[lvl], v_cycle[lvl], p_cycle[lvl], f_cycle[lvl], g_cycle[lvl], d_cycle[lvl], b, t, l, r);
+                (*smoother)(n >> (lvl), lvl, mgiter, mgv0, mgv1, u_cycle[lvl], v_cycle[lvl], p_cycle[lvl], f_cycle[lvl], g_cycle[lvl], d_cycle[lvl], b, t, l, r);
             }
             residual(n >> (lvl), lvl , u_cycle[lvl], v_cycle[lvl], p_cycle[lvl], f_cycle[lvl], g_cycle[lvl], d_cycle[lvl], b, t, l, r, rf_cycle[lvl], rg_cycle[lvl], rdiv_cycle[lvl], &res, &res_div);
             print(rf_cycle[lvl], (n >>(lvl)) + 1, n >> (lvl), "rf_cycle_rough");
@@ -129,7 +129,7 @@ int vcycle(int n, int level, int mgiter, int mgv0, int mgv1, int maxcnt, smoothe
             print(v_cycle[lvl-1], (n >> (lvl-1)) , (n >> (lvl-1))+1, "v_cycle_correct");
             for(int i = 0; i<mgv1; i++)
             {
-                (*smoother)(n >> (lvl - 1), level, mgiter, mgv0, mgv1, u_cycle[lvl - 1], v_cycle[lvl - 1], p_cycle[lvl - 1], f_cycle[lvl - 1], g_cycle[lvl - 1], d_cycle[lvl - 1], b, t, l, r);
+                (*smoother)(n >> (lvl - 1), lvl, mgiter, mgv0, mgv1, u_cycle[lvl - 1], v_cycle[lvl - 1], p_cycle[lvl - 1], f_cycle[lvl - 1], g_cycle[lvl - 1], d_cycle[lvl - 1], b, t, l, r);
             }
             
         }

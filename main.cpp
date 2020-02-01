@@ -6,12 +6,18 @@
 #include <time.h>
 
 using namespace std;
+int pcg_level;
 int main(int argc, char* argv[])
 {
     smoother_type* smt[4] = {&dgs_iteration, &uzawa_iteration, &inexact_uzawa_iteration, &pcg_uzawa_iteration};
     int smtnum = argc > 1? atoi(argv[1]) : 0;
     int n = argc > 2 ? atoi(argv[2]) : 64;
     int level = argc > 3 ? atoi(argv[3]): 1;
+    if (smtnum == 3)
+    {
+        pcg_level = level;
+        level = 1;
+    }
     int v0 = argc > 4 ?atoi(argv[4]) : 3;
     int v1 = argc > 5 ?atoi(argv[5]) : 3;
     int mgiter = argc > 6 ?atoi(argv[6]) : 1; //only available for pcg_uzawa
